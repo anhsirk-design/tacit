@@ -57,3 +57,8 @@ timings sub-5 ms for retrieval at 1k files.
 1. `npm run typecheck && npm test && npm run build && npm run bench`
 2. Bump version, update BENCHMARKS.md if numbers moved.
 3. Commit, tag, `npm publish` (if publishing) and push to GitHub.
+
+## Docs map
+
+architecture/graphs/recovery/opencode-integration/schema/privacy/threat-model/troubleshooting .md live in docs/. Reliability guarantees + release gate: RELIABILITY.md. Updated docs belong in the same PR as the code change they describe.
+

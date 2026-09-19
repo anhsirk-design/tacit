@@ -1,49 +1,43 @@
 # Tacit
 
-Local-first **context engine** for AI coding agents, built as a native
-[OpenCode](https://opencode.ai) plugin. Tacit gives your agent a compact,
-token-budgeted `<local-context>` block on every prompt — no MCP, no LLM,
-no embeddings, no cloud. Everything is deterministic and lives in a local
-SQLite database.
+Local-first context engine for AI coding agents, shipped as a native
+[OpenCode](https://opencode.ai) plugin. Every prompt, your agent receives one
+small, deterministic `<local-context>` block: the relevant code graph, the
+project knowledge, and hard-won "what worked / what failed" knowledge —
+no LLM calls, no embeddings, no network, no telemetry. It's all SQLite.
 
-## Why
+**Docs:** [architecture](#architecture-in-depth) · [privacy](#privacy) · [reliability](RELIABILITY.md) · contributing below.
 
-AI coding agents re-explore the same code and repeat the same mistakes every
-session. Tacit fixes this with three persistent graphs:
+---
 
-| Graph  | Answers | Contents |
-|--------|---------|----------|
-| **Code** | *where* | Files, symbols, imports — tree-sitter indexed, incremental, FTS-searchable |
-| **Project (Memory)** | *what we decided* | Facts, decisions, constraints, task state, session summaries |
-| **Tacit** | *what worked elsewhere* | Global trial-and-error knowledge: problem → attempt → result, with confidence, evidence, and verification status |
+## What Tacit does
 
-## How it works (one prompt cycle)
+Three persistent graphs, retrieved in one bounded pass:
 
-1. You send a message — the plugin's `chat.message` hook captures the text.
-2. The engine retrieves from all three graphs: exact symbol lookup, FTS5
-   full-text, k-hop graph expansion of symbols, project memories, and
-   tacit knowledge matching the problem.
-3. Results are scored and packed into a `<local-context>` block within a
-   token budget (default 500 tok) and injected via the system prompt.
-4. Tool results are recorded (success/failure) to reinforce or decay tacit
-   knowledge; compaction checkpoints keep small session memories instead of
-   huge history.
+| Graph | Answers | Where |
+|---|---|---|
+| **Code** | *where* — "which functions implement auth?" | tree-sitter index: files, symbols, imports/calls per project |
+| **Project memory** | *what we decided here* | facts, decisions, constraints, session checkpoints |
+| **Tacit knowledge** | *what works elsewhere* | global trial-and-error lessons (problem → attempt → result), with confidence + verification |
 
-Typical timings: retrieval median ~1.4 ms on 1,000-file repos; whole-repo
-reindex with no changes ~100 ms, single-file reindex ~4 ms. See
-`BENCHMARKS.md`.
+One prompt cycle: your message text → layered deterministic retrieval
+(exact symbol lookup, FTS5, 1-hop graph expansion) → scored → packed into
+≤500 tokens → injected in the system prompt → tool outcomes feed back into
+confidence. Retrieval takes ~1–2 ms; indexing is incremental (a run over an
+unchanged repo costs ~100 ms).
+
+Everything runs inside your agent process. No MCP server, no cloud,
+no telemetry.
 
 ## Install
 
+Requires **Node ≥ 20**.
+
 ```sh
-npm install -g tacit          # or as a project dep
+npm install tacit
 ```
 
-Requires Node >= 20.
-
-## Use
-
-Add a `opencode.json` plugin entry or drop it in your OpenCode config:
+as an OpenCode plugin in `opencode.json`:
 
 ```json
 {
@@ -51,49 +45,83 @@ Add a `opencode.json` plugin entry or drop it in your OpenCode config:
 }
 ```
 
-Options (passed in the plugin config object):
+Options: `"tokenBudget"` (default 500 tokens), `"debug"` (per-message
+timings on stderr; or run with `TACIT_DEBUG=1`).
 
-- `tokenBudget` — max tokens of injected context (default 500)
-- `debug` — log retrieval timings per message to stderr
-- `autoIndex` — index lazily on first prompt (default true)
+## Initialize & run
 
-Environment:
+Nothing to set up: the plugin initializes on its first prompt.
 
-- `TACIT_HOME` — directory for the **global** tacit graph. When set, learned
-  trial-and-error knowledge is shared across all projects on the machine.
+- Open OpenCode in your project → send a prompt → the `<local-context>`
+  block is injected when the message matches real identifiers in your code.
+- First-ever indexing runs in the background (a few ms per file; subsequent
+  edits are single-file incremental on tool events).
 
-Data lives per-project in `.tacit/` (SQLite, WAL). Add `.tacit/` to your
-`.gitignore`.
+Programmatic use (any adapter):
 
-## Architecture
-
-```
-src/
-  core/         db, schema, project store, tacit store, code indexer,
-                retrieval, identifiers
-  engine.ts     TacitEngine — index / retrieve / remember / learn / close
-  tacit/        learner: reinforcement + decay of lessons
-  adapters/     native OpenCode plugin (chat hooks, injection, compaction)
-scripts/        bench.ts — synthetic-repo benchmarks
-test/           vitest: engine retrieval, store lifecycle
+```ts
+import { TacitEngine } from "tacit";
+const engine = new TacitEngine({ root: process.cwd() });
+await engine.index();
+const ctx = engine.retrieve("auth middleware");
+console.log(ctx.text); // the token-budgeted block
+engine.close();
 ```
 
-Deterministic pipeline — hashing for incremental indexing, tree-sitter for
-symbol extraction, FTS5 for ranking, SQLite for all three graphs. No LLM
-calls, no embeddings.
-
-## Development
-
-See [DEVELOPMENT.md](DEVELOPMENT.md).
-
-## Benchmarks
-
-`BENCHMARKS.md` holds current numbers. Run yourself:
+Health / repair:
 
 ```sh
-npm run bench
+npm run doctor [--repair]      # integrity check, + rebuild derived state
 ```
 
-## License
+## Where data lives
 
-MIT
+- `<project>/.tacit/project.db` — per-project code graph, memories,
+  sessions, events.
+- `<project>/.tacit/tacit.db` — trial-and-error knowledge.
+- Set `TACIT_HOME=~/.tacit-home` to keep one shared tacit graph across all
+  projects on the machine (still machine-local).
+- **Add `.tacit/` to your `.gitignore`** — everything there is local derived
+  state and can be deleted at will; the code graph rebuilds from source.
+
+## Privacy model (short version)
+
+- **No network calls. Ever.** No telemetry, no model calls, no embeddings —
+  the retrieval path is deterministic.
+- **Reads:** your source files to build the graph (stores symbol names and
+  line ranges, not file contents); tool success/failure context.
+- **Writes:** only `.tacit/` (or `$TACIT_HOME`). Your source and git are
+  never touched. Delete `.tacit/` ⇒ everything Tacit knows about the
+  project is gone.
+- Full model: [docs/privacy.md](docs/privacy.md).
+
+## Security
+
+Report a vulnerability privately — **do not** open a public issue. See
+[SECURITY.md](SECURITY.md) (button: "Report a vulnerability" on the GitHub
+repository's Security tab). The threat model and data-safety guarantees live
+in [docs/threat-model.md](docs/threat-model.md) and
+[RELIABILITY.md](RELIABILITY.md): fail-closed hooks, corrupted-DB
+discard-and-rebuild, degraded in-memory mode, SIGKILL-crash recovery.
+
+## Contributing
+
+PRs welcome. Setup is `npm install && npm test`; read
+[CONTRIBUTING.md](CONTRIBUTING.md) for the ground rules (fail-closed
+boundaries, determinism, regression tests for every failure mode) and the
+release gate. Report bugs with `npm run doctor` output attached.
+
+## Architecture in depth
+
+- [docs/architecture.md](docs/architecture.md) — layers, data flow, invariants
+- [docs/graphs.md](docs/graphs.md) — the three graphs in detail
+- [docs/recovery.md](docs/recovery.md) — checkpoints, doctor, crash model
+- [docs/opencode-integration.md](docs/opencode-integration.md) — hooks + adapter API
+- [docs/schema.md](docs/schema.md) — db and table reference
+- [BENCHMARKS.md](BENCHMARKS.md) — current numbers
+- [DEVELOPMENT.md](DEVELOPMENT.md) — building/running/test conventions
+
+## Maturity
+
+v0.1.0. Tech: TypeScript ES modules, better-sqlite3, web-tree-sitter.
+License: [MIT](LICENSE).
