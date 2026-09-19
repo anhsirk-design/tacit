@@ -60,16 +60,24 @@ async function lang(l: Lang): Promise<Language | null> {
     l === "py" ? "python" :
     l === "rust" ? "rust" :
     l === "ts" || l === "tsx" ? "typescript" :
-    l === "jsx" ? "javascript" :
-    l; // js, go, java map directly
+    l === "js" || l === "jsx" ? "javascript" :
+    l; // go, java map directly
+  // fallback: some tree-sitter-wasms versions ship a short alias name
+  const wasmCandidates = [wasmName, wasmName === "javascript" ? "js" : wasmName];
   try {
-    // tree-sitter-wasms ships prebuilt .wasm grammars
-    const wasmPath = require.resolve(`tree-sitter-wasms/out/tree-sitter-${wasmName}.wasm`);
-    const loaded = await Language.load(wasmPath);
-    langCache.set(l, loaded);
-    return loaded;
-  } catch {
+    for (const candidate of wasmCandidates) {
+      try {
+        const wasmPath = require.resolve(`tree-sitter-wasms/out/tree-sitter-${candidate}.wasm`);
+        const loaded = await Language.load(wasmPath);
+        langCache.set(l, loaded);
+        return loaded;
+      } catch {
+        // try next candidate name
+      }
+    }
     return null; // graceful degradation: skip unparseable language
+  } catch {
+    return null;
   }
 }
 

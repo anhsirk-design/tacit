@@ -48,6 +48,13 @@ as an OpenCode plugin in `opencode.json`:
 Options: `"tokenBudget"` (default 500 tokens), `"debug"` (per-message
 timings on stderr; or run with `TACIT_DEBUG=1`).
 
+Programmatic use: the package entry is plugin-only (OpenCode's loader calls
+every exported function); import the engine API from the `lib` subpath:
+
+```js
+import { TacitEngine } from "@anhsirk-design/tacit/lib";
+```
+
 ## Initialize & run
 
 Nothing to set up: the plugin initializes on its first prompt.

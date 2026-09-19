@@ -3,6 +3,23 @@
 All notable changes to Tacit are documented here ([Keep a Changelog];
 pre-1.0, minor versions may break).
 
+## [0.1.0-alpha.1] — plugin loads + JavaScript indexing
+
+Bugfix release after a real-world usage report found two blockers.
+
+### Fixed
+
+- **Plugin failed to load in OpenCode**: the package entry re-exported engine
+  classes; OpenCode's loader invokes every exported function as a plugin
+  factory, so invoking a class constructor aborted the whole plugin. The entry
+  now exports only the plugin factory (named + default); the programmatic API
+  moved to the `./lib` subpath (`@anhsirk-design/tacit/lib`).
+- **`.js`/`.mjs`/`.cjs` files were never indexed**: they mapped to a wasm
+  grammar name (`tree-sitter-js.wasm`) that `tree-sitter-wasms` does not ship.
+  They now resolve to `javascript` (with alias fallback). Regression tests:
+  grammar-by-name and full `.js` project indexing.
+- npm metadata: removed a stray non-standard `typecheck` field.
+
 ## [0.1.0-alpha] — first release
 
 Status: **alpha** — the deterministic retrieval core is feature-complete

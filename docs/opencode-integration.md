@@ -18,6 +18,12 @@ In your OpenCode config(`opencode.json`):
 
 Options (the second argument of the plugin factory):
 
+Note on entry points: the package root (`"@anhsirk-design/tacit"`) is
+**plugin-only** — OpenCode's loader imports it and invokes every exported
+function as a plugin factory, so no classes are exported there. The engine
+API lives behind the `./lib` subpath; a stable `./plugin` subpath (the
+plugin factory alone) also exists.
+
 | Option | Default | Meaning |
 |---|---|---|
 | `tokenBudget` | `500` | Max tokens of the injected `<local-context>` block |

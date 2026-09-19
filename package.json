@@ -1,6 +1,6 @@
 {
   "name": "@anhsirk-design/tacit",
-  "version": "0.1.0-alpha",
+  "version": "0.1.0-alpha.1",
   "description": "Local-first context engine for AI coding agents: three persistent graphs (code, project memory, trial-and-error knowledge), deterministic retrieval, native OpenCode plugin. No LLM, no embeddings, no network.",
   "type": "module",
   "main": "dist/index.js",
@@ -13,6 +13,10 @@
     "./plugin": {
       "types": "./dist/adapters/opencode/plugin.d.ts",
       "default": "./dist/adapters/opencode/plugin.js"
+    },
+    "./lib": {
+      "types": "./dist/lib.d.ts",
+      "default": "./dist/lib.js"
     }
   },
   "bin": {
@@ -64,11 +68,5 @@
     "tsx": "^4.20.0",
     "typescript": "^5.8.0",
     "vitest": "^3.2.0"
-  },
-  "typecheck": {
-    "build": {
-      "ready": "true"
-    },
-    "ok": "true"
   }
 }

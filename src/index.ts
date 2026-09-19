@@ -1,8 +1,12 @@
-export { TacitEngine } from "./engine.js";
-export { ProjectStore } from "./core/project-store.js";
-export { TacitStore, ftsEscape } from "./core/tacit-store.js";
-export { CodeIndexer } from "./core/code-indexer.js";
-export { Retriever } from "./core/retrieval.js";
-export * from "./core/types.js";
+/**
+ * Package entry point.
+ *
+ * IMPORTANT: must export ONLY functions, with the plugin as the default export.
+ * OpenCode's plugin loader imports this entry and invokes every function it
+ * finds among the module's exports as a plugin factory — any class export
+ * breaks plugin load. Engine classes live behind the "./lib" subpath.
+ */
+import { tacitPlugin } from "./adapters/opencode/plugin.js";
 
-export { tacitPlugin } from "./adapters/opencode/plugin.js";
+export { tacitPlugin };
+export default tacitPlugin;
