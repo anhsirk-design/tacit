@@ -1,0 +1,9 @@
+﻿index: {"filesScanned":0,"filesIndexed":0,"filesUnchanged":0,"filesRemoved":0,"symbols":0,"relationships":0,"durationMs":0.36209999999994125,"skipped":[]}
+retrieval ms: 1.48 tokens: 0
+
+phases: {"exact":0.47,"fts-code":0.28,"traverse":0,"fts-memory":0.34,"fts-tacit":0.15}
+tacit: playwright browser hangs after navigation
+<local-context>
+Prior experience (advisory, may be outdated):
+- playwright browser hangs after navigation ΓÇö failed: waitForTimeout(5000) (timing dependent) [conf 60%, verified today]
+</local-context>

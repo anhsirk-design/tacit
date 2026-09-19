@@ -13,6 +13,11 @@ export function extractIdentifiers(text: string): string[] {
   const idRe = /\b[A-Za-z_][A-Za-z0-9_$]*(?:[._][A-Za-z0-9_$]+)+\b|\b[a-z]+[A-Z][A-Za-z0-9_$]*\b|\b[A-Z][a-z]+[A-Z][A-Za-z0-9_$]*\b/g;
   for (const m of text.matchAll(idRe)) out.push(m[0]);
 
+  // generated-style tokens containing digits (v1, f0, handler2) — only treated
+  // as exact identifiers when they carry a digit, so prose stays prose
+  const digitRe = /\b[A-Za-z_][A-Za-z0-9_$]*[0-9][A-Za-z0-9_$]*\b/g;
+  for (const m of text.matchAll(digitRe)) out.push(m[0]);
+
   // quoted usages
   const qRe = /['"`]([^'"`\n]{2,80})['"`]/g;
   for (const m of text.matchAll(qRe)) out.push(m[1]);

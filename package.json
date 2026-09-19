@@ -10,6 +10,7 @@
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "bench": "tsx scripts/bench.ts",
+    "doctor": "tsx scripts/doctor.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "keywords": ["ai", "agents", "context", "opencode", "local-first"],

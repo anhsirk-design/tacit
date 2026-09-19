@@ -1,0 +1,11 @@
+{
+    "schema_version": 2,
+    "commit": "2e98ed32212e04a04b432db23808b185689dd648",
+    "indexed_at": "2026-09-19T12:58:21Z",
+    "project": "C-Work-Tacit",
+    "nodes": 297,
+    "edges": 732,
+    "original_size": 3145728,
+    "compressed_size": 406448,
+    "compression_level": 3
+}
