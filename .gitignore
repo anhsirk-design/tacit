@@ -12,3 +12,6 @@ IDEA.md
 .codebase-memory
 *.tgz
 
+
+.tmp-js-probe.js
+TACIT-TEST-REPORT.md
