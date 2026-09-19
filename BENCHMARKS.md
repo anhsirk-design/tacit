@@ -22,6 +22,21 @@ Environment: Windows 11, Node 24, better-sqlite3, web-tree-sitter (TypeScript gr
 | FTS5 symbol search | 0.11 ms | 0.22 ms |
 | Combined retrieval (exact + FTS + 1-hop graph + memory + tacit) | 1.7 ms (100 files) / 1.2 ms (1000 files) | 3.3 ms |
 
+## Stress (`npm run stress -- 5000`)
+
+5000 synthetic TypeScript files (~150k symbols), Windows 11, Node 24:
+
+| Scenario | Time | Notes |
+|---|---|---|
+| Engine startup | 27 ms | opening both SQLite graphs |
+| Initial index (5000 files) | ~22 s | one-time cost, ~4.4 ms/file incl. parse |
+| Incremental: 100 files touched | ~0.5 s | per-file reindex via tool hook |
+| Full reindex, unchanged 5000 files | ~206 ms | hash/mtime check only |
+| Retrieval (combined, 5000 files) | 1.8 ms median | budget-capped, deterministic |
+| DB size | 68 MB | WAL; project.db + tacit.db |
+| RSS after full run | 721 MB | tree-sitter WASM parse-heavy phase |
+| Restart after SIGKILL mid-index | 522 ms open + 206 ms reindex | degraded=false, healthCheck ok, 0 manual steps |
+
 ## Context injection
 
 Measured deltas (chars/4): typical injected context 40–180 tokens with the

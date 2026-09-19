@@ -5,15 +5,24 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "bench": "tsx scripts/bench.ts",
     "doctor": "tsx scripts/doctor.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "stress": "tsx scripts/stress.ts"
   },
-  "keywords": ["ai", "agents", "context", "opencode", "local-first"],
+  "keywords": [
+    "ai",
+    "agents",
+    "context",
+    "opencode",
+    "local-first"
+  ],
   "license": "MIT",
   "dependencies": {
     "@opencode-ai/plugin": "^1.18.31",
