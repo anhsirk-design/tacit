@@ -3,3 +3,4 @@ dist
 .tacit
 *.tsbuildinfo
 .DS_Store
+smoke.txt
