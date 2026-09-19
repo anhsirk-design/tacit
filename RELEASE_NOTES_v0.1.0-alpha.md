@@ -26,7 +26,7 @@ Ships as a native OpenCode plugin (in-process, not MCP) plus a standalone
 ## Install
 
 ```sh
-npm install -g tacit
+npm install -g @anhsirk-design/tacit
 # in your project:
 tacit doctor
 ```

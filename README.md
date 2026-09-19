@@ -34,7 +34,7 @@ no telemetry.
 Requires **Node ≥ 20**.
 
 ```sh
-npm install tacit
+npm install @anhsirk-design/tacit
 ```
 
 as an OpenCode plugin in `opencode.json`:

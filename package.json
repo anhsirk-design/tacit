@@ -1,5 +1,5 @@
 {
-  "name": "tacit",
+  "name": "@anhsirk-design/tacit",
   "version": "0.1.0-alpha",
   "description": "Local-first context engine for AI coding agents: three persistent graphs (code, project memory, trial-and-error knowledge), deterministic retrieval, native OpenCode plugin. No LLM, no embeddings, no network.",
   "type": "module",
