@@ -41,7 +41,7 @@ as an OpenCode plugin in `opencode.json`:
 
 ```json
 {
-  "plugin": ["tacit"]
+  "plugin": ["@anhsirk-design/tacit"]
 }
 ```
 

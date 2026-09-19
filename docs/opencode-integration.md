@@ -12,7 +12,7 @@ In your OpenCode config(`opencode.json`):
 
 ```json
 {
-  "plugin": ["tacit"]
+  "plugin": ["@anhsirk-design/tacit"]
 }
 ```
 
