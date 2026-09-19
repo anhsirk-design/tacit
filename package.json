@@ -1,0 +1,30 @@
+{
+  "name": "tacit",
+  "version": "0.1.0",
+  "description": "Tacit: local-first context engine for AI coding agents",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "bench": "tsx scripts/bench.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": ["ai", "agents", "context", "opencode", "local-first"],
+  "license": "MIT",
+  "dependencies": {
+    "@opencode-ai/plugin": "^1.18.31",
+    "better-sqlite3": "^13.0.3",
+    "web-tree-sitter": "^0.25.10"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.0.0",
+    "tree-sitter-wasms": "^0.1.12",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.0"
+  }
+}
