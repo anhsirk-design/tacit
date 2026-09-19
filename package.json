@@ -1,10 +1,31 @@
 {
   "name": "tacit",
-  "version": "0.1.0",
-  "description": "Tacit: local-first context engine for AI coding agents",
+  "version": "0.1.0-alpha",
+  "description": "Local-first context engine for AI coding agents: three persistent graphs (code, project memory, trial-and-error knowledge), deterministic retrieval, native OpenCode plugin. No LLM, no embeddings, no network.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./plugin": {
+      "types": "./dist/adapters/opencode/plugin.d.ts",
+      "default": "./dist/adapters/opencode/plugin.js"
+    }
+  },
+  "bin": {
+    "tacit": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE.md",
+    "CHANGELOG.md",
+    "docs"
+  ],
   "engines": {
     "node": ">=20"
   },
@@ -12,29 +33,42 @@
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "bench": "tsx scripts/bench.ts",
+    "stress": "tsx scripts/stress.ts",
     "doctor": "tsx scripts/doctor.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "stress": "tsx scripts/stress.ts"
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "keywords": [
     "ai",
     "agents",
     "context",
     "opencode",
-    "local-first"
+    "local-first",
+    "retrieval"
   ],
-  "license": "MIT",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anhsirk-design/tacit.git"
+  },
+  "homepage": "https://github.com/anhsirk-design/tacit#readme",
+  "bugs": "https://github.com/anhsirk-design/tacit/issues",
   "dependencies": {
     "@opencode-ai/plugin": "^1.18.31",
     "better-sqlite3": "^13.0.3",
+    "tree-sitter-wasms": "^0.1.12",
     "web-tree-sitter": "^0.25.10"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^24.0.0",
-    "tree-sitter-wasms": "^0.1.12",
     "tsx": "^4.20.0",
     "typescript": "^5.8.0",
     "vitest": "^3.2.0"
+  },
+  "typecheck": {
+    "build": {
+      "ready": "true"
+    },
+    "ok": "true"
   }
 }

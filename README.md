@@ -123,5 +123,5 @@ release gate. Report bugs with `npm run doctor` output attached.
 
 ## Maturity
 
-v0.1.0. Tech: TypeScript ES modules, better-sqlite3, web-tree-sitter.
-License: [MIT](LICENSE).
+Release: v0.1.0-alpha (alpha). Tech: TypeScript ES modules,
+better-sqlite3, web-tree-sitter. License: [Apache-2.0](LICENSE).
