@@ -1,0 +1,22 @@
+import { TacitEngine } from "../src/engine.js";
+import path from "node:path";
+
+const demo = path.join(process.cwd(), "test", "fixtures", "demo-repo");
+const e = new TacitEngine({ root: demo });
+const stats = await e.index();
+console.log("index:", JSON.stringify(stats, null, 0));
+const stats2 = await e.index();
+console.log("reindex (incremental):", JSON.stringify(stats2));
+const r = e.retrieve("how does getUsers work? where is useUsers called?");
+console.log("ms:", r.ms, "tokens:", r.tokens);
+console.log(r.text);
+e.recordToolResult("s1", "edit", false, "broken getUsers path error 404");
+e.recordToolResult("s1", "edit", false, "broken getUsers path error 404");
+e.recordToolResult("s1", "bash", true, "passed getUsers after fix");
+const learned = e.consolidateSession("s1");
+console.log("learned:", learned.map((k) => k.problem));
+const mem = e.remember({ kind: "decision", scope: "project", text: "Users API uses /users endpoint" });
+console.log("memory:", mem.id);
+const r2 = e.retrieve("playwright hangs");
+console.log(r2.text);
+e.close();
