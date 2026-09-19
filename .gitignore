@@ -1,3 +1,7 @@
+# Tacit runtime state
+.tacit/
+*.tgz
+smoke.txt
 node_modules
 dist
 .tacit
@@ -7,3 +11,4 @@ smoke.txt
 IDEA.md
 .codebase-memory
 *.tgz
+
